@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
@@ -45,6 +49,12 @@ export class LeaveRequestsService {
   async update(id: string, updateLeaveRequestDto: UpdateLeaveRequestDto) {
     const leaveRequest = await this.findOne(id);
 
+    if (leaveRequest.status !== LeaveRequestStatus.DRAFT) {
+      throw new BadRequestException(
+        'Only leave requests in DRAFT status can be updated',
+      );
+    }
+
     Object.assign(leaveRequest, updateLeaveRequestDto);
 
     return await this.leaveRequestRepository.save(leaveRequest);
@@ -52,10 +62,59 @@ export class LeaveRequestsService {
 
   async remove(id: string) {
     const leaveRequest = await this.findOne(id);
+
+    if (leaveRequest.status !== LeaveRequestStatus.DRAFT) {
+      throw new BadRequestException(
+        'Only leave requests in DRAFT status can be deleted',
+      );
+    }
+
     await this.leaveRequestRepository.remove(leaveRequest);
 
     return {
       message: `Leave request with id ${id} deleted successfully`,
     };
+  }
+
+  async submit(id: string) {
+    const leaveRequest = await this.findOne(id);
+
+    if (leaveRequest.status !== LeaveRequestStatus.DRAFT) {
+      throw new BadRequestException(
+        'Only leave requests in DRAFT status can be submitted',
+      );
+    }
+
+    leaveRequest.status = LeaveRequestStatus.SUBMITTED;
+
+    return await this.leaveRequestRepository.save(leaveRequest);
+  }
+
+  async approve(id: string) {
+    const leaveRequest = await this.findOne(id);
+
+    if (leaveRequest.status !== LeaveRequestStatus.SUBMITTED) {
+      throw new BadRequestException(
+        'Only leave requests in SUBMITTED status can be approved',
+      );
+    }
+
+    leaveRequest.status = LeaveRequestStatus.APPROVED;
+
+    return await this.leaveRequestRepository.save(leaveRequest);
+  }
+
+  async reject(id: string) {
+    const leaveRequest = await this.findOne(id);
+
+    if (leaveRequest.status !== LeaveRequestStatus.SUBMITTED) {
+      throw new BadRequestException(
+        'Only leave requests in SUBMITTED status can be rejected',
+      );
+    }
+
+    leaveRequest.status = LeaveRequestStatus.REJECTED;
+
+    return await this.leaveRequestRepository.save(leaveRequest);
   }
 }

@@ -42,4 +42,19 @@ export class LeaveRequestsController {
   remove(@Param('id') id: string) {
     return this.leaveRequestsService.remove(id);
   }
+
+  @Post(':id/submit')
+  submit(@Param('id') id: string) {
+    return this.leaveRequestsService.submit(id);
+  }
+
+  @Post(':id/approve')
+  approve(@Param('id') id: string) {
+    return this.leaveRequestsService.approve(id);
+  }
+
+  @Post(':id/reject')
+  reject(@Param('id') id: string) {
+    return this.leaveRequestsService.reject(id);
+  }
 }
