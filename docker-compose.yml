@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: leave-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: leave_management
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # camunda:
+  #   image: camunda/camunda-bpm-platform:run-latest
+  #   container_name: leave-camunda
+  #   restart: always
+  #   ports:
+  #     - '8080:8080'
+
+  # app:
+  #   build: .
+  #   container_name: leave-app
+  #   restart: always
+  #   depends_on:
+  #     - postgres
+  #     - camunda
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USERNAME: postgres
+  #     DB_PASSWORD: postgres
+  #     DB_NAME: leave_management
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+
+volumes:
+  postgres_data:
