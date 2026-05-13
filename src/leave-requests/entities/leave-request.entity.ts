@@ -40,6 +40,9 @@ export class LeaveRequest {
   })
   status!: LeaveRequestStatus;
 
+  @Column({ type: 'varchar', nullable: true })
+  processInstanceId!: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CamundaService } from '../camunda/camunda.service';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
 import {
@@ -17,6 +18,7 @@ export class LeaveRequestsService {
   constructor(
     @InjectRepository(LeaveRequest)
     private readonly leaveRequestRepository: Repository<LeaveRequest>,
+    private readonly camundaService: CamundaService,
   ) {}
 
   async create(createLeaveRequestDto: CreateLeaveRequestDto) {
@@ -85,7 +87,12 @@ export class LeaveRequestsService {
       );
     }
 
+    const process = await this.camundaService.startLeaveApprovalProcess(
+      leaveRequest.id,
+    );
+
     leaveRequest.status = LeaveRequestStatus.SUBMITTED;
+    leaveRequest.processInstanceId = process.id;
 
     return await this.leaveRequestRepository.save(leaveRequest);
   }
