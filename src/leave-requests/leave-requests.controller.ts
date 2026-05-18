@@ -7,7 +7,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ClaimTaskDto } from './dto/claim-task.dto';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
+import { TaskActionDto } from './dto/task-action.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
 import { LeaveRequestsService } from './leave-requests.service';
 
@@ -48,13 +50,23 @@ export class LeaveRequestsController {
     return this.leaveRequestsService.submit(id);
   }
 
+  @Get(':id/tasks')
+  getTasks(@Param('id') id: string) {
+    return this.leaveRequestsService.getTasks(id);
+  }
+
+  @Post(':id/claim')
+  claimTask(@Param('id') id: string, @Body() claimTaskDto: ClaimTaskDto) {
+    return this.leaveRequestsService.claimTask(id, claimTaskDto.userId);
+  }
+
   @Post(':id/approve')
-  approve(@Param('id') id: string) {
-    return this.leaveRequestsService.approve(id);
+  approve(@Param('id') id: string, @Body() taskActionDto: TaskActionDto) {
+    return this.leaveRequestsService.approve(id, taskActionDto.userId);
   }
 
   @Post(':id/reject')
-  reject(@Param('id') id: string) {
-    return this.leaveRequestsService.reject(id);
+  reject(@Param('id') id: string, @Body() taskActionDto: TaskActionDto) {
+    return this.leaveRequestsService.reject(id, taskActionDto.userId);
   }
 }

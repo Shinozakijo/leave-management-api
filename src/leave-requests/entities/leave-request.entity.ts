@@ -9,6 +9,7 @@ import {
 export enum LeaveRequestStatus {
   DRAFT = 'DRAFT',
   SUBMITTED = 'SUBMITTED',
+  MANAGER_APPROVED = 'MANAGER_APPROVED',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
