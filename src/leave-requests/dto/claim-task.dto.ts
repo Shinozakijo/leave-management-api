@@ -4,4 +4,8 @@ export class ClaimTaskDto {
   @IsString()
   @IsNotEmpty()
   userId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  group!: string;
 }

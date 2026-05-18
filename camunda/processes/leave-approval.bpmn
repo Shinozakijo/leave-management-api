@@ -12,10 +12,18 @@
   <bpmn:process id="leave-approval" name="Leave Approval Process" isExecutable="true" camunda:historyTimeToLive="30">
     <bpmn:startEvent id="StartEvent_1" name="Start Leave Request" />
 
-    <bpmn:userTask id="ManagerApprovalTask" name="Manager Approval" />
+    <bpmn:userTask
+      id="ManagerApprovalTask"
+      name="Manager Approval"
+      camunda:candidateGroups="managers" />
+
     <bpmn:exclusiveGateway id="Gateway_ManagerDecision" name="Manager Approved?" />
 
-    <bpmn:userTask id="HRApprovalTask" name="HR Approval" />
+    <bpmn:userTask
+      id="HRApprovalTask"
+      name="HR Approval"
+      camunda:candidateGroups="hr" />
+
     <bpmn:exclusiveGateway id="Gateway_HRDecision" name="HR Approved?" />
 
     <bpmn:endEvent id="EndEvent_Approved" name="Approved" />

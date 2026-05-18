@@ -40,6 +40,14 @@ export class CamundaService {
     return response.data;
   }
 
+  async getTasksByCandidateGroup(group: string): Promise<CamundaTask[]> {
+    const url = `${this.baseUrl}/task?candidateGroup=${group}`;
+    const response = await firstValueFrom(
+      this.httpService.get<CamundaTask[]>(url),
+    );
+    return response.data;
+  }
+
   async getAllTasks(): Promise<CamundaTask[]> {
     const url = `${this.baseUrl}/task`;
     const response = await firstValueFrom(

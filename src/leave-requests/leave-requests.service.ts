@@ -13,6 +13,7 @@ import {
   LeaveRequest,
   LeaveRequestStatus,
 } from './entities/leave-request.entity';
+import { CamundaTask } from 'src/camunda/interfaces/camunda.interfaces';
 
 @Injectable()
 export class LeaveRequestsService {
@@ -202,7 +203,19 @@ export class LeaveRequestsService {
     );
   }
 
-  async claimTask(id: string, userId: string) {
+  private getExpectedGroupForTask(taskName: string): string {
+    if (taskName === 'Manager Approval') {
+      return 'managers';
+    }
+
+    if (taskName === 'HR Approval') {
+      return 'hr';
+    }
+
+    throw new BadRequestException(`Unknown task name: ${taskName}`);
+  }
+
+  async claimTask(id: string, userId: string, group: string) {
     const leaveRequest = await this.findOne(id);
 
     if (!leaveRequest.processInstanceId) {
@@ -216,6 +229,31 @@ export class LeaveRequestsService {
         leaveRequest.processInstanceId,
       );
 
+    const expectedGroup = this.getExpectedGroupForTask(currentTask.name);
+
+    if (group !== expectedGroup) {
+      throw new ForbiddenException(
+        `Task ${currentTask.name} can only be claimed by group ${expectedGroup}`,
+      );
+    }
+
+    const tasksForGroup =
+      await this.camundaService.getTasksByCandidateGroup(group);
+
+    const taskExistsForGroup = tasksForGroup.some(
+      (task: CamundaTask) => task.id === currentTask.id,
+    );
+
+    if (!taskExistsForGroup) {
+      throw new ForbiddenException(
+        `Task ${currentTask.name} is not available for candidate group ${group}`,
+      );
+    }
+
     return await this.camundaService.claimTask(currentTask.id, userId);
+  }
+
+  async getTasksByGroup(group: string) {
+    return await this.camundaService.getTasksByCandidateGroup(group);
   }
 }

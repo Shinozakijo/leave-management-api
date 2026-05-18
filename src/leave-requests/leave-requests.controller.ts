@@ -27,6 +27,11 @@ export class LeaveRequestsController {
     return this.leaveRequestsService.findAll();
   }
 
+  @Get('/tasks/group/:group')
+  getTasksByGroup(@Param('group') group: string) {
+    return this.leaveRequestsService.getTasksByGroup(group);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.leaveRequestsService.findOne(id);
@@ -57,7 +62,11 @@ export class LeaveRequestsController {
 
   @Post(':id/claim')
   claimTask(@Param('id') id: string, @Body() claimTaskDto: ClaimTaskDto) {
-    return this.leaveRequestsService.claimTask(id, claimTaskDto.userId);
+    return this.leaveRequestsService.claimTask(
+      id,
+      claimTaskDto.userId,
+      claimTaskDto.group,
+    );
   }
 
   @Post(':id/approve')
