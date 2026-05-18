@@ -6,10 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ClaimTaskDto } from './dto/claim-task.dto';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
-import { TaskActionDto } from './dto/task-action.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
 import { LeaveRequestsService } from './leave-requests.service';
 
@@ -60,22 +61,21 @@ export class LeaveRequestsController {
     return this.leaveRequestsService.getTasks(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/claim')
-  claimTask(@Param('id') id: string, @Body() claimTaskDto: ClaimTaskDto) {
-    return this.leaveRequestsService.claimTask(
-      id,
-      claimTaskDto.userId,
-      claimTaskDto.group,
-    );
+  claimTask(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.leaveRequestsService.claimTask(id, user.username, user.group);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/approve')
-  approve(@Param('id') id: string, @Body() taskActionDto: TaskActionDto) {
-    return this.leaveRequestsService.approve(id, taskActionDto.userId);
+  approve(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.leaveRequestsService.approve(id, user.username);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/reject')
-  reject(@Param('id') id: string, @Body() taskActionDto: TaskActionDto) {
-    return this.leaveRequestsService.reject(id, taskActionDto.userId);
+  reject(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.leaveRequestsService.reject(id, user.username);
   }
 }

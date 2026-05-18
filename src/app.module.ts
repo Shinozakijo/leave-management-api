@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 import { CamundaModule } from './camunda/camunda.module';
 import { LeaveRequestsModule } from './leave-requests/leave-requests.module';
 
@@ -15,6 +16,7 @@ import { LeaveRequestsModule } from './leave-requests/leave-requests.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AuthModule,
     CamundaModule,
     LeaveRequestsModule,
   ],
